@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 200000);
 
     function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
@@ -195,8 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'menu__item'
     ).render();
 
-
-
     new MenuCard(
         'img/tabs/post.jpg',
         'post',
@@ -207,4 +205,43 @@ document.addEventListener('DOMContentLoaded', () => {
         'menu__item'
     ).render();
 
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'loading...',
+        success: 'Thanks. We will contact you soon.',
+        failure: 'Something is wrong.'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form){
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'multipart/form-data');
+            const formData = new FormData(form);
+
+            request.send(formData);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200){
+                    statusMessage.textContent = message.success;
+                }else{
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 });
